@@ -25,6 +25,12 @@ public class Worker : BackgroundService
         var info = await _adminService.InfoAsync();
         Console.WriteLine(info.Item.Db.Title);
 
+        info = await _adminService.SeedAsync(10);
+        Console.WriteLine(info.Item.Db.Title);
+
+        info = await _adminService.RemoveSeedAsync(true);
+        Console.WriteLine(info.Item.Db.Title);
+
         await _host.StopAsync();
     }
 }
