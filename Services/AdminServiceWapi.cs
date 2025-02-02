@@ -13,14 +13,6 @@ public class AdminServiceWapi : IAdminService {
 
     private readonly ILogger<AdminServiceWapi> _logger; 
     private readonly HttpClient _httpClient;
-
-    //To ensure Json deserializern is using the class implementations instead of the Interfaces 
-    readonly JsonSerializerSettings _jsonSettings = new JsonSerializerSettings
-    {
-        Converters = {
-            new AbstractConverter<TemplateModel, ITemplateModel>()
-        },
-    };
    
     
     public AdminServiceWapi(ILogger<AdminServiceWapi> logger, IHttpClientFactory httpClientFactory)
@@ -42,7 +34,7 @@ public class AdminServiceWapi : IAdminService {
 
         //Get the resonse data
         string s = await response.Content.ReadAsStringAsync();
-        var resp = JsonConvert.DeserializeObject<AdminInfo>(s, _jsonSettings);
+        var resp = JsonConvert.DeserializeObject<AdminInfo>(s);
         return resp;
     }
 
@@ -89,7 +81,7 @@ public class AdminServiceWapi : IAdminService {
 
         //Get the resonse data
         string s = await response.Content.ReadAsStringAsync();
-        var resp = JsonConvert.DeserializeObject<ResponseItemDto<GstUsrInfoAllDto>>(s, _jsonSettings);
+        var resp = JsonConvert.DeserializeObject<ResponseItemDto<GstUsrInfoAllDto>>(s);
         return resp;
     }
 }
