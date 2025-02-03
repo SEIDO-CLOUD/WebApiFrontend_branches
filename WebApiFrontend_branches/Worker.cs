@@ -28,56 +28,72 @@ public class Worker : BackgroundService
         };
 
         await AdminAccess(settings);
-        //await ReadAccess(settings);
-
-        Console.WriteLine($"\n\n{nameof(_zooService.ReadZooDtoAsync)}: update first item");
-        var respItems = await _zooService.ReadZoosAsync(true, true, null, 0, 5);
-        var respItem = await _zooService.ReadZooDtoAsync(respItems.PageItems[0].ZooId, false);
-        var oldName = respItem.Item.Name;
-        var oldAnimals = respItem.Item.AnimalsId;
-
-        respItem.Item.Name = "Martins renamed Zoo";
-        var zoo = await _zooService.UpdateZooAsync(respItem.Item);
-        Console.WriteLine(JsonConvert.SerializeObject(zoo, settings));
-
-        System.Console.WriteLine("\n\n...and update back:");
-        respItem.Item.Name = oldName;
-        zoo = await _zooService.UpdateZooAsync(respItem.Item);
-        Console.WriteLine(JsonConvert.SerializeObject(zoo, settings));
-
+        await ReadAccess(settings);
+        await UpdateAccess(settings);
+        await CreateAccess(settings);
 
         await _host.StopAsync();
     }
 
+    private async Task CreateAccess(JsonSerializerSettings settings)
+    {
+        _logger.LogInformation($"\n\n{nameof(_zooService.ReadZooDtoAsync)}: Create item");
+        var item = new ZooCuDto();
+
+        item.Name = "Martins created empty Zoo";
+        item.City = "Martins City";
+        item.Country = "Martins Country";
+
+        var zoo = await _zooService.CreateZooAsync(item);
+        _logger.LogInformation(JsonConvert.SerializeObject(zoo, settings));
+    }
+
+    private async Task UpdateAccess(JsonSerializerSettings settings)
+    {
+        _logger.LogInformation($"\n\n{nameof(_zooService.ReadZooDtoAsync)}: Update and Item");
+        var respItems = await _zooService.ReadZoosAsync(true, true, null, 0, 5);
+        var respItem = await _zooService.ReadZooDtoAsync(respItems.PageItems[0].ZooId, false);
+        var oldName = respItem.Item.Name;
+
+        respItem.Item.Name = "Martins updated empty Zoo";
+        respItem.Item.City = "Martins City";
+        respItem.Item.Country = "Martins Country";
+        respItem.Item.AnimalsId = null;
+        respItem.Item.EmployeesId = null;
+
+        var zoo = await _zooService.UpdateZooAsync(respItem.Item);
+        _logger.LogInformation(JsonConvert.SerializeObject(zoo, settings));
+    }
+
     private async Task ReadAccess(JsonSerializerSettings settings)
     {
-        Console.WriteLine($"\n\n{nameof(_zooService.ReadZoosAsync)}: page 0");
+        _logger.LogInformation($"\n\n{nameof(_zooService.ReadZoosAsync)}: ReadItems page 0");
         var respItems = await _zooService.ReadZoosAsync(true, true, null, 0, 5);
-        Console.WriteLine(JsonConvert.SerializeObject(respItems, settings));
+        _logger.LogInformation(JsonConvert.SerializeObject(respItems, settings));
 
 
-        Console.WriteLine($"\n\n{nameof(_zooService.ReadZooAsync)}: first item");
+        _logger.LogInformation($"\n\n{nameof(_zooService.ReadZooAsync)}: ReadItem");
         respItems = await _zooService.ReadZoosAsync(true, true, null, 0, 5);
         var respItem = await _zooService.ReadZooAsync(respItems.PageItems[0].ZooId, false);
-        Console.WriteLine(JsonConvert.SerializeObject(respItem, settings));
+        _logger.LogInformation(JsonConvert.SerializeObject(respItem, settings));
     }
 
     private async Task AdminAccess(JsonSerializerSettings settings)
     {
-        Console.WriteLine($"\n\n{nameof(_adminService.AdminInfoAsync)}:");
+        _logger.LogInformation($"\n\n{nameof(_adminService.AdminInfoAsync)}:");
         var adminInfo = await _adminService.AdminInfoAsync();
-        Console.WriteLine(JsonConvert.SerializeObject(adminInfo, settings));
+        _logger.LogInformation(JsonConvert.SerializeObject(adminInfo, settings));
 
-        Console.WriteLine($"\n\n{nameof(_adminService.InfoAsync)}:");
+        _logger.LogInformation($"\n\n{nameof(_adminService.InfoAsync)}:");
         var info = await _adminService.InfoAsync();
-        Console.WriteLine(JsonConvert.SerializeObject(info, settings));
+        _logger.LogInformation(JsonConvert.SerializeObject(info, settings));
 
-        Console.WriteLine($"\n\n{nameof(_adminService.RemoveSeedAsync)}:");
+        _logger.LogInformation($"\n\n{nameof(_adminService.RemoveSeedAsync)}:");
         info = await _adminService.RemoveSeedAsync(true);
-        Console.WriteLine(JsonConvert.SerializeObject(info, settings));
+        _logger.LogInformation(JsonConvert.SerializeObject(info, settings));
 
-        Console.WriteLine($"\n\n{nameof(_adminService.SeedAsync)}:");
+        _logger.LogInformation($"\n\n{nameof(_adminService.SeedAsync)}:");
         info = await _adminService.SeedAsync(10);
-        Console.WriteLine(JsonConvert.SerializeObject(info, settings));
+        _logger.LogInformation(JsonConvert.SerializeObject(info, settings));
     }
 }
