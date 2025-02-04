@@ -2,9 +2,11 @@ using System;
 using System.Net.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using System.Net.Http.Headers;
 
 using Models;
 using Models.DTO;
+
 
 namespace Services;
 
@@ -14,7 +16,15 @@ public class AdminServiceWapi : IAdminService {
     private readonly ILogger<AdminServiceWapi> _logger; 
     private readonly HttpClient _httpClient;
    
-    
+    public string BearerToken { 
+        set
+        {
+            if (value != null)
+            {
+                _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", value);
+            }
+        }}
+
     public AdminServiceWapi(ILogger<AdminServiceWapi> logger, IHttpClientFactory httpClientFactory)
     {
         _logger = logger;
@@ -25,7 +35,7 @@ public class AdminServiceWapi : IAdminService {
     public async Task<AdminInfo> AdminInfoAsync() 
     {
         string uri = $"admin/info";
-
+        
         //Send the HTTP Message and await the repsonse
         HttpResponseMessage response = await _httpClient.GetAsync(uri);
 
@@ -69,7 +79,7 @@ public class AdminServiceWapi : IAdminService {
         return info;
     }
 
-        public async Task<ResponseItemDto<GstUsrInfoAllDto>> InfoAsync() 
+    public async Task<ResponseItemDto<GstUsrInfoAllDto>> InfoAsync() 
     {
         string uri = $"guest/info";
 

@@ -2,6 +2,7 @@ using System;
 using System.Net.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using System.Net.Http.Headers;
 
 using Models;
 using Models.DTO;
@@ -25,6 +26,15 @@ public class ZooServiceWapi : IZooService {
         },
     };
     
+    public string BearerToken { 
+    set
+    {
+        if (value != null)
+        {
+            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", value);
+        }
+    }}
+
     public ZooServiceWapi(ILogger<AdminServiceWapi> logger, IHttpClientFactory httpClientFactory)
     {
         _logger = logger;

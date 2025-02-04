@@ -9,15 +9,17 @@ public class Worker : BackgroundService
 {
     private readonly ILogger<Worker> _logger;
     private readonly IHost _host;
-    private IAdminService _adminService;
-    private IZooService _zooService;
+    private readonly IAdminService _adminService;
+    private readonly IZooService _zooService;
+    private readonly ILoginService _loginService;
 
-    public Worker(ILogger<Worker> logger, IHost host, IAdminService adminService, IZooService zooService)
+    public Worker(ILogger<Worker> logger, IHost host, IAdminService adminService, IZooService zooService, ILoginService loginService)
     {
         _logger = logger;
         _host = host;
         _adminService = adminService;
         _zooService = zooService;
+        _loginService = loginService;
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -26,7 +28,13 @@ public class Worker : BackgroundService
         {
             Formatting = Formatting.Indented // This enables indentation and newlines
         };
-        _logger.LogInformation("CRUD access started");
+        _logger.LogInformation("JWT CRUD access started");
+
+        var creds = new LoginCredentialsDto(){UserNameOrEmail = "sysadmin1", Password="sysadmin1"};
+
+        var token = await LoginAccess(settings, creds);
+        _adminService.BearerToken = token;
+        _zooService.BearerToken = token;
 
         await AdminAccess(settings);
         await ReadAccess(settings);
@@ -34,7 +42,7 @@ public class Worker : BackgroundService
         await CreateAccess(settings);
         await DeleteAccess(settings);
 
-        _logger.LogInformation("CRUD access finnished");
+        _logger.LogInformation("JWT CRUD access finished");
         await _host.StopAsync();
     }
 
@@ -105,6 +113,7 @@ public class Worker : BackgroundService
              _logger.LogDebug($"Successfully deleted item {respItems.PageItems[0].ZooId}");
         }
     }
+
     private async Task AdminAccess(JsonSerializerSettings settings)
     {
         _logger.LogTrace($"\n\n{nameof(_adminService.AdminInfoAsync)}:");
@@ -115,7 +124,6 @@ public class Worker : BackgroundService
             _logger.LogError($"Environment error in {nameof(_adminService.AdminInfoAsync)}");
             _logger.LogError(JsonConvert.SerializeObject(adminInfo, settings));
         }
-
 
         _logger.LogTrace($"\n\n{nameof(_adminService.InfoAsync)}:");
         var info = await _adminService.InfoAsync();
@@ -132,6 +140,24 @@ public class Worker : BackgroundService
         {
             _logger.LogError($"Seed error in {nameof(_adminService.SeedAsync)}");
             _logger.LogError(JsonConvert.SerializeObject(info, settings));
+        }
+    }
+
+    private async Task<string> LoginAccess(JsonSerializerSettings settings, LoginCredentialsDto creds)
+    {
+        _logger.LogTrace($"\n\n{nameof(_loginService.LoginUserAsync)}:");
+        try 
+        {
+            var login = await _loginService.LoginUserAsync(creds);
+            if (login.Item.UserName == creds.UserNameOrEmail)
+            _logger.LogInformation($"Successfully logged in {login.Item.UserName}");
+
+            return login.Item.JwtToken.EncryptedToken;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError($"{ex.Message}");
+            throw;
         }
     }
 }
