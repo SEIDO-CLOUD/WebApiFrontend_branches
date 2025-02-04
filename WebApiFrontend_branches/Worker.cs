@@ -32,6 +32,7 @@ public class Worker : BackgroundService
         await ReadAccess(settings);
         await UpdateAccess(settings);
         await CreateAccess(settings);
+        await DeleteAccess(settings);
 
         _logger.LogInformation("CRUD access finnished");
         await _host.StopAsync();
@@ -85,6 +86,25 @@ public class Worker : BackgroundService
         }
     }
 
+    private async Task DeleteAccess(JsonSerializerSettings settings)
+    {
+        _logger.LogTrace($"\n\n{nameof(_zooService.ReadZooAsync)}: Delete Item");
+        var respItems = await _zooService.ReadZoosAsync(true, true, null, 0, 5);
+        var respItem = await _zooService.DeleteZooAsync(respItems.PageItems[0].ZooId);
+
+        try 
+        {
+            await _zooService.ReadZooAsync(respItems.PageItems[0].ZooId, false);
+
+            //I should reach this place, as item should not exist
+            _logger.LogError($"Delete error in {nameof(_zooService.DeleteZooAsync)}");
+            _logger.LogTrace(JsonConvert.SerializeObject(respItem, settings));
+        }
+        catch (Exception ex)
+        {
+             _logger.LogDebug($"Successfully deleted item {respItems.PageItems[0].ZooId}");
+        }
+    }
     private async Task AdminAccess(JsonSerializerSettings settings)
     {
         _logger.LogTrace($"\n\n{nameof(_adminService.AdminInfoAsync)}:");
