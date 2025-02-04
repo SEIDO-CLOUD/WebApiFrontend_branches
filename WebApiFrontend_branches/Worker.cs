@@ -30,7 +30,7 @@ public class Worker : BackgroundService
         };
         _logger.LogInformation("JWT CRUD access started");
 
-        var creds = new LoginCredentialsDto(){UserNameOrEmail = "sysadmin1", Password="sysadmin1"};
+        var creds = new LoginCredentialsDto(){UserNameOrEmail = "user1", Password="sysadmin1"};
 
         var token = await LoginAccess(settings, creds);
         _adminService.BearerToken = token;
