@@ -28,9 +28,9 @@ public class Worker : BackgroundService
         {
             Formatting = Formatting.Indented // This enables indentation and newlines
         };
-        _logger.LogInformation("JWT CRUD access started");
+        _logger.LogInformation("JWT CRUD test suite started");
 
-        var creds = new LoginCredentialsDto(){UserNameOrEmail = "superuser1", Password="superuser1"};
+        var creds = new LoginCredentialsDto(){UserNameOrEmail = "sysadmin1", Password="sysadmin1"};
 
         try
         {
@@ -43,14 +43,17 @@ public class Worker : BackgroundService
             await UpdateAccess(settings);
             await CreateAccess(settings);
             await DeleteAccess(settings);
+
+            _logger.LogInformation("All tests completed successfully");
         }
         catch (Exception ex)
         {
             _logger.LogError($"{ex.Message}.{ex.InnerException?.Message}");
+            _logger.LogError("Tests failed");
         }
 
 
-        _logger.LogInformation("JWT CRUD access finished");
+        _logger.LogInformation("JWT CRUD test suite ended");
         await _host.StopAsync();
     }
 
@@ -136,7 +139,7 @@ public class Worker : BackgroundService
         var info = await _adminService.InfoAsync();
         _logger.LogTrace(JsonConvert.SerializeObject(info, settings));
 
-/*
+
         _logger.LogInformation($"Test: {nameof(_adminService.RemoveSeedAsync)}:");
         info = await _adminService.RemoveSeedAsync(true);
         _logger.LogTrace(JsonConvert.SerializeObject(info, settings));
@@ -149,7 +152,7 @@ public class Worker : BackgroundService
             _logger.LogError($"Seed error in {nameof(_adminService.SeedAsync)}");
             _logger.LogError(JsonConvert.SerializeObject(info, settings));
         }
-*/
+
     }
 
     private async Task<string> LoginAccess(JsonSerializerSettings settings, LoginCredentialsDto creds)
