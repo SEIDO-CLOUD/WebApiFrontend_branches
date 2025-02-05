@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Net;
 using System.Net.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+
 
 using Models;
 using Models.DTO;
@@ -32,9 +34,8 @@ public class LoginServiceWapi : ILoginService
         //Send the HTTP Message and await the repsonse
         HttpResponseMessage response = await _httpClient.PostAsync(uri, requestContent);
 
-        //Throw an exception if the response is not successful
-        response.EnsureSuccessStatusCode();
-
+        await response.EnsureSuccessStatusCodeWithMessage();
+      
         //Get the resonse data
         string s = await response.Content.ReadAsStringAsync();
         var resp = JsonConvert.DeserializeObject<ResponseItemDto<LoginUserSessionDto>>(s);

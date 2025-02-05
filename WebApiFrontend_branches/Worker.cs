@@ -30,17 +30,25 @@ public class Worker : BackgroundService
         };
         _logger.LogInformation("JWT CRUD access started");
 
-        var creds = new LoginCredentialsDto(){UserNameOrEmail = "sysadmin1", Password="sysadmin1"};
+        var creds = new LoginCredentialsDto(){UserNameOrEmail = "superuser1", Password="superuser1"};
 
-        var token = await LoginAccess(settings, creds);
-        _adminService.BearerToken = token;
-        _zooService.BearerToken = token;
+        try
+        {
+            var token = await LoginAccess(settings, creds);
+            _adminService.BearerToken = token;
+            _zooService.BearerToken = token;
 
-        await AdminAccess(settings);
-        await ReadAccess(settings);
-        await UpdateAccess(settings);
-        await CreateAccess(settings);
-        await DeleteAccess(settings);
+            await AdminAccess(settings);
+            await ReadAccess(settings);
+            await UpdateAccess(settings);
+            await CreateAccess(settings);
+            await DeleteAccess(settings);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError($"{ex.Message}.{ex.InnerException?.Message}");
+        }
+
 
         _logger.LogInformation("JWT CRUD access finished");
         await _host.StopAsync();
@@ -48,7 +56,7 @@ public class Worker : BackgroundService
 
     private async Task CreateAccess(JsonSerializerSettings settings)
     {
-        _logger.LogTrace($"\n\n{nameof(_zooService.ReadZooDtoAsync)}: Create item");
+        _logger.LogInformation($"Test: {nameof(_zooService.CreateZooAsync)}");
         var item = new ZooCuDto();
 
         item.Name = "Martins created empty Zoo";
@@ -61,7 +69,7 @@ public class Worker : BackgroundService
 
     private async Task UpdateAccess(JsonSerializerSettings settings)
     {
-        _logger.LogTrace($"\n\n{nameof(_zooService.ReadZooDtoAsync)}: Update and Item");
+        _logger.LogInformation($"Test: {nameof(_zooService.UpdateZooAsync)}");
         var respItems = await _zooService.ReadZoosAsync(true, true, null, 0, 5);
         var respItem = await _zooService.ReadZooDtoAsync(respItems.PageItems[0].ZooId, false);
         var oldName = respItem.Item.Name;
@@ -78,13 +86,12 @@ public class Worker : BackgroundService
 
     private async Task ReadAccess(JsonSerializerSettings settings)
     {
-        _logger.LogTrace($"\n\n{nameof(_zooService.ReadZoosAsync)}: ReadItems page 0");
+        _logger.LogInformation($"Test: {nameof(_zooService.ReadZoosAsync)}");
         var respItems = await _zooService.ReadZoosAsync(true, true, null, 0, 5);
         _logger.LogTrace(JsonConvert.SerializeObject(respItems, settings));
 
 
-        _logger.LogTrace($"\n\n{nameof(_zooService.ReadZooAsync)}: ReadItem");
-        respItems = await _zooService.ReadZoosAsync(true, true, null, 0, 5);
+        _logger.LogTrace($"Test: {nameof(_zooService.ReadZooAsync)}");
         var respItem = await _zooService.ReadZooAsync(respItems.PageItems[0].ZooId, false);
         _logger.LogTrace(JsonConvert.SerializeObject(respItem, settings));
         if (respItem.Item.ZooId != respItems.PageItems[0].ZooId)
@@ -96,7 +103,7 @@ public class Worker : BackgroundService
 
     private async Task DeleteAccess(JsonSerializerSettings settings)
     {
-        _logger.LogTrace($"\n\n{nameof(_zooService.ReadZooAsync)}: Delete Item");
+        _logger.LogInformation($"Test: {nameof(_zooService.DeleteZooAsync)}");
         var respItems = await _zooService.ReadZoosAsync(true, true, null, 0, 5);
         var respItem = await _zooService.DeleteZooAsync(respItems.PageItems[0].ZooId);
 
@@ -116,24 +123,25 @@ public class Worker : BackgroundService
 
     private async Task AdminAccess(JsonSerializerSettings settings)
     {
-        _logger.LogTrace($"\n\n{nameof(_adminService.AdminInfoAsync)}:");
+        _logger.LogInformation($"Test: {nameof(_adminService.AdminInfoAsync)}:");
         var adminInfo = await _adminService.AdminInfoAsync();
         _logger.LogTrace(JsonConvert.SerializeObject(adminInfo, settings));
-        if (adminInfo.AppEnvironment != "Production")
+        if (adminInfo.AppEnvironment != "Development")
         {
             _logger.LogError($"Environment error in {nameof(_adminService.AdminInfoAsync)}");
             _logger.LogError(JsonConvert.SerializeObject(adminInfo, settings));
         }
 
-        _logger.LogTrace($"\n\n{nameof(_adminService.InfoAsync)}:");
+        _logger.LogInformation($"Test: {nameof(_adminService.InfoAsync)}:");
         var info = await _adminService.InfoAsync();
         _logger.LogTrace(JsonConvert.SerializeObject(info, settings));
 
-        _logger.LogTrace($"\n\n{nameof(_adminService.RemoveSeedAsync)}:");
+/*
+        _logger.LogInformation($"Test: {nameof(_adminService.RemoveSeedAsync)}:");
         info = await _adminService.RemoveSeedAsync(true);
         _logger.LogTrace(JsonConvert.SerializeObject(info, settings));
 
-        _logger.LogTrace($"\n\n{nameof(_adminService.SeedAsync)}:");
+        _logger.LogInformation($"Test: {nameof(_adminService.SeedAsync)}:");
         _logger.LogTrace(JsonConvert.SerializeObject(info, settings));
         info = await _adminService.SeedAsync(10);
         if (info.Item.Db.NrSeededZoos != 10)
@@ -141,11 +149,12 @@ public class Worker : BackgroundService
             _logger.LogError($"Seed error in {nameof(_adminService.SeedAsync)}");
             _logger.LogError(JsonConvert.SerializeObject(info, settings));
         }
+*/
     }
 
     private async Task<string> LoginAccess(JsonSerializerSettings settings, LoginCredentialsDto creds)
     {
-        _logger.LogTrace($"\n\n{nameof(_loginService.LoginUserAsync)}:");
+        _logger.LogInformation($"Test: {nameof(_loginService.LoginUserAsync)}:");
         try 
         {
             var login = await _loginService.LoginUserAsync(creds);

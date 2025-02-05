@@ -50,8 +50,7 @@ public class ZooServiceWapi : IZooService {
         //Send the HTTP Message and await the repsonse
         HttpResponseMessage response = await _httpClient.GetAsync(uri);
 
-        //Throw an exception if the response is not successful
-        response.EnsureSuccessStatusCode();
+        await response.EnsureSuccessStatusCodeWithMessage();
 
         //Get the resonse data
         string s = await response.Content.ReadAsStringAsync();
@@ -66,7 +65,7 @@ public class ZooServiceWapi : IZooService {
         HttpResponseMessage response = await _httpClient.GetAsync(uri);
 
         //Throw an exception if the response is not successful
-        response.EnsureSuccessStatusCode();
+        await response.EnsureSuccessStatusCodeWithMessage();
 
         //Get the response body
         string s = await response.Content.ReadAsStringAsync();
@@ -82,7 +81,7 @@ public class ZooServiceWapi : IZooService {
         HttpResponseMessage response = await _httpClient.GetAsync(uri);
 
         //Throw an exception if the response is not successful
-        response.EnsureSuccessStatusCode();
+        await response.EnsureSuccessStatusCodeWithMessage();
 
         //Get the response body
         string s = await response.Content.ReadAsStringAsync();
@@ -97,7 +96,7 @@ public class ZooServiceWapi : IZooService {
         HttpResponseMessage response = await _httpClient.DeleteAsync(uri);
 
         //Throw an exception if the response is not successful
-        response.EnsureSuccessStatusCode();
+        await response.EnsureSuccessStatusCodeWithMessage();
 
         //Get the response body
         string s = await response.Content.ReadAsStringAsync();
@@ -116,7 +115,7 @@ public class ZooServiceWapi : IZooService {
         HttpResponseMessage response = await _httpClient.PutAsync(uri, requestContent);
 
         //Throw an exception if the response is not successful
-        response.EnsureSuccessStatusCode();
+        await response.EnsureSuccessStatusCodeWithMessage();
 
         //Get the response body
         string s = await response.Content.ReadAsStringAsync();
@@ -135,7 +134,7 @@ public class ZooServiceWapi : IZooService {
         HttpResponseMessage response = await _httpClient.PostAsync(uri, requestContent);
 
         //Throw an exception if the response is not successful
-        response.EnsureSuccessStatusCode();
+        await response.EnsureSuccessStatusCodeWithMessage();
 
         //Get the resonse data
         string s = await response.Content.ReadAsStringAsync();

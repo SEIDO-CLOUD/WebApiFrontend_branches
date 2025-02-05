@@ -40,7 +40,7 @@ public class AdminServiceWapi : IAdminService {
         HttpResponseMessage response = await _httpClient.GetAsync(uri);
 
         //Throw an exception if the response is not successful
-        response.EnsureSuccessStatusCode();
+        await response.EnsureSuccessStatusCodeWithMessage();
 
         //Get the resonse data
         string s = await response.Content.ReadAsStringAsync();
@@ -56,7 +56,7 @@ public class AdminServiceWapi : IAdminService {
         HttpResponseMessage response = await _httpClient.GetAsync(uri);
 
         //Throw an exception if the response is not successful
-        response.EnsureSuccessStatusCode();
+        await response.EnsureSuccessStatusCodeWithMessage();
 
         //Get the response body
         string s = await response.Content.ReadAsStringAsync();
@@ -71,7 +71,7 @@ public class AdminServiceWapi : IAdminService {
         HttpResponseMessage response = await _httpClient.GetAsync(uri);
 
         //Throw an exception if the response is not successful
-        response.EnsureSuccessStatusCode();
+        await response.EnsureSuccessStatusCodeWithMessage();
 
         //Get the response body
         string s = await response.Content.ReadAsStringAsync();
@@ -87,7 +87,7 @@ public class AdminServiceWapi : IAdminService {
         HttpResponseMessage response = await _httpClient.GetAsync(uri);
 
         //Throw an exception if the response is not successful
-        response.EnsureSuccessStatusCode();
+        await response.EnsureSuccessStatusCodeWithMessage();
 
         //Get the resonse data
         string s = await response.Content.ReadAsStringAsync();
