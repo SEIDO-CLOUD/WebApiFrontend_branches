@@ -16,6 +16,7 @@ builder.Services.AddHttpClient(name: "ZooWebApi", configureClient: options =>
 builder.Services.AddSingleton<IAdminService, AdminServiceWapi>();
 builder.Services.AddSingleton<IZooService, ZooServiceWapi>();
 builder.Services.AddSingleton<ILoginService, LoginServiceWapi>();
+builder.Services.AddSingleton<ITestEndpointAccess, TestEndpointAccess>();
 
 var host = builder.Build();
 host.Run();
